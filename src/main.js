@@ -12,10 +12,23 @@ formEl.addEventListener('submit', onFormSubmit);
 async function onFormSubmit(event) {
   event.preventDefault();
   clearGallery();
-showLoader();
+  showLoader();
+
   try {
     const searchQuery = event.target.elements['search-text'].value.trim();
+
+    if (!searchQuery) {
+      iziToast.warning({
+        title: 'Warning',
+        message: 'Please enter a search term.',
+        position: 'topRight',
+        timeout: 3000,
+      });
+      return;
+    }
+
     const response = await getImagesByQuery(searchQuery);
+
     if (response.hits.length === 0) {
       iziToast.error({
         title: 'Error',
@@ -25,6 +38,7 @@ showLoader();
       });
       return;
     }
+
     createGallery(response.hits);
   } catch (error) {
     iziToast.error({
@@ -34,7 +48,6 @@ showLoader();
       timeout: 3000,
     });
   } finally {
-    
     hideLoader();
   }
 }
